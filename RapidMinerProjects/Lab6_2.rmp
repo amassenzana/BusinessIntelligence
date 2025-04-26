@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><process version="11.0.001">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="11.0.001" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="read_excel" compatibility="11.0.001" expanded="true" height="68" name="Training Set" width="90" x="45" y="34">
+        <parameter key="excel_file" value="C:\Users\masse\OneDrive\Desktop\Business Intellig for BD\Laboratori\Lab6\Lab6Materiale\user.xlsx"/>
+        <parameter key="sheet_selection" value="sheet number"/>
+        <parameter key="sheet_number" value="1"/>
+        <parameter key="imported_cell_range" value="A1"/>
+        <parameter key="encoding" value="SYSTEM"/>
+        <parameter key="use_header_row" value="true"/>
+        <parameter key="header_row" value="1"/>
+        <parameter key="first_row_as_names" value="true"/>
+        <list key="annotations"/>
+        <parameter key="date_format" value=""/>
+        <parameter key="time_zone" value="Europe/Rome"/>
+        <parameter key="locale" value="English (United States)"/>
+        <parameter key="read_all_values_as_polynominal" value="false"/>
+        <list key="data_set_meta_data_information">
+          <parameter key="0" value="Age.true.integer.attribute"/>
+          <parameter key="1" value="Workclass.true.polynominal.attribute"/>
+          <parameter key="2" value="Education.true.polynominal.attribute"/>
+          <parameter key="3" value="Marital Status.true.polynominal.attribute"/>
+          <parameter key="4" value="Occupation.true.polynominal.attribute"/>
+          <parameter key="5" value="Relationship.true.polynominal.attribute"/>
+          <parameter key="6" value="Race.true.polynominal.attribute"/>
+          <parameter key="7" value="Sex.true.polynominal.attribute"/>
+          <parameter key="8" value="Native Country.true.polynominal.attribute"/>
+          <parameter key="9" value="Response.true.polynominal.attribute"/>
+        </list>
+        <parameter key="read_not_matching_values_as_missings" value="false"/>
+      </operator>
+      <operator activated="true" class="blending:set_role" compatibility="11.0.001" expanded="true" height="82" name="Set Role" width="90" x="179" y="34">
+        <list key="set_roles">
+          <parameter key="Response" value="label"/>
+        </list>
+      </operator>
+      <operator activated="true" class="concurrency:parallel_random_forest" compatibility="11.0.001" expanded="true" height="103" name="Random Forest" width="90" x="313" y="34">
+        <parameter key="number_of_trees" value="100"/>
+        <parameter key="criterion" value="gain_ratio"/>
+        <parameter key="maximal_depth" value="10"/>
+        <parameter key="apply_pruning" value="false"/>
+        <parameter key="confidence" value="0.1"/>
+        <parameter key="apply_prepruning" value="false"/>
+        <parameter key="minimal_gain" value="0.01"/>
+        <parameter key="minimal_leaf_size" value="2"/>
+        <parameter key="minimal_size_for_split" value="4"/>
+        <parameter key="number_of_prepruning_alternatives" value="3"/>
+        <parameter key="random_splits" value="false"/>
+        <parameter key="guess_subset_ratio" value="true"/>
+        <parameter key="subset_ratio" value="0.2"/>
+        <parameter key="voting_strategy" value="confidence vote"/>
+        <parameter key="use_local_random_seed" value="false"/>
+        <parameter key="local_random_seed" value="1992"/>
+        <parameter key="enable_parallel_execution" value="true"/>
+      </operator>
+      <operator activated="true" class="weight_by_information_gain_ratio" compatibility="11.0.001" expanded="true" height="82" name="Weight by Information Gain Ratio" width="90" x="447" y="34">
+        <parameter key="normalize_weights" value="false"/>
+        <parameter key="sort_weights" value="true"/>
+        <parameter key="sort_direction" value="descending"/>
+      </operator>
+      <connect from_op="Training Set" from_port="output" to_op="Set Role" to_port="example set input"/>
+      <connect from_op="Set Role" from_port="example set output" to_op="Random Forest" to_port="training set"/>
+      <connect from_op="Random Forest" from_port="exampleSet" to_op="Weight by Information Gain Ratio" to_port="example set"/>
+      <connect from_op="Weight by Information Gain Ratio" from_port="weights" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+    </process>
+  </operator>
+</process>
